@@ -7,6 +7,7 @@ set -e
 echo "Updating system and installing packages..."
 sudo apt-get update
 sudo apt-get install -y python3-pip python3-venv nodejs npm mysql-server nginx
+sudo apt-get install -y python3-dev default-libmysqlclient-dev build-essential pkg-config
 
 # Install Node.js 18.x
 curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
