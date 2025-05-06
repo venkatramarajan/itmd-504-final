@@ -24,6 +24,11 @@ sudo mysql -e "FLUSH PRIVILEGES;"
 sudo mkdir -p /var/www/address_book
 sudo chown -R $USER:$USER /var/www/address_book
 
+# Copy application files
+cp -r backend /var/www/address_book/
+cp -r frontend /var/www/address_book/
+cp requirements.txt /var/www/address_book/
+
 # Set up Python virtual environment
 cd /var/www/address_book
 python3 -m venv venv

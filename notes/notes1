@@ -1,0 +1,36 @@
+#After deployment, create a .env file in the project root with the following content:
+FLASK_APP=backend/app.py
+FLASK_ENV=production
+SECRET_KEY=your-secret-key-here
+JWT_SECRET_KEY=your-jwt-secret-key-here
+DATABASE_URL=mysql://address_book_user:your_secure_password@localhost/address_book
+#Important security steps after deployment:
+#Change the default admin password (admin/admin123)
+#Enable SSL/TLS using Let's Encrypt (uncomment the last lines in deploy.sh)
+#Configure your firewall to allow only necessary ports (80, 443)
+#Keep your system and dependencies updated
+#The application will be accessible at:
+#Frontend: http://your_domain.com
+#Backend API: http://your_domain.com/api
+#You can monitor the application using:
+# View application logs
+pm2 logs address_book_backend
+
+# Check Nginx logs
+sudo tail -f /var/log/nginx/error.log
+sudo tail -f /var/log/nginx/access.log
+
+# Check application status
+pm2 status
+
+# Restart application
+pm2 restart address_book_backend
+
+# Check application logs
+pm2 logs address_book_backend
+
+# Check Nginx logs
+sudo tail -f /var/log/nginx/error.log
+sudo tail -f /var/log/nginx/access.log
+#To setup the Startup Script, copy/paste the following command:
+sudo env PATH=$PATH:/usr/bin /usr/local/lib/node_modules/pm2/bin/pm2 startup systemd -u vrraajan --hp /home/vrraajan
