@@ -1,6 +1,9 @@
 import os
 from datetime import timedelta
 import secrets
+import logging
+
+logger = logging.getLogger(__name__)
 
 class Config:
     # Generate secure random keys if not set in environment
@@ -20,4 +23,7 @@ class Config:
     JWT_ACCESS_TOKEN_EXPIRES = timedelta(hours=1)
     
     # CORS configuration
-    CORS_HEADERS = 'Content-Type' 
+    CORS_HEADERS = 'Content-Type'
+
+    def __init__(self):
+        logger.debug(f"Database URI: mysql://{self.DB_USER}:****@{self.DB_HOST}/{self.DB_NAME}") 

@@ -3,6 +3,11 @@ from flask_cors import CORS
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
 from models import db, User, Contact
 from config import Config
+import logging
+
+# Configure logging
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -21,14 +26,21 @@ db.init_app(app)
 
 # Create tables
 with app.app_context():
-    db.create_all()
-    # Create admin user if not exists
-    admin = User.query.filter_by(username='admin').first()
-    if not admin:
-        admin = User(username='admin', is_admin=True)
-        admin.set_password('admin123')
-        db.session.add(admin)
-        db.session.commit()
+    try:
+        db.create_all()
+        # Create admin user if not exists
+        admin = User.query.filter_by(username='admin').first()
+        if not admin:
+            admin = User(username='admin', is_admin=True)
+            admin.set_password('admin123')
+            db.session.add(admin)
+            db.session.commit()
+            logger.info("Admin user created successfully")
+        else:
+            logger.info("Admin user already exists")
+    except Exception as e:
+        logger.error(f"Error during database initialization: {str(e)}")
+        raise
 
 @app.route('/api/register', methods=['POST'])
 @jwt_required()
@@ -49,16 +61,28 @@ def register():
 
 @app.route('/api/login', methods=['POST'])
 def login():
-    data = request.get_json()
-    user = User.query.filter_by(username=data['username']).first()
-    
-    if user and user.check_password(data['password']):
-        access_token = create_access_token(identity=user.id)
-        return jsonify({
-            'access_token': access_token,
-            'is_admin': user.is_admin
-        })
-    return jsonify({'error': 'Invalid credentials'}), 401
+    try:
+        data = request.get_json()
+        logger.debug(f"Login attempt for user: {data.get('username')}")
+        
+        user = User.query.filter_by(username=data['username']).first()
+        if not user:
+            logger.warning(f"Login failed: User {data.get('username')} not found")
+            return jsonify({'error': 'Invalid credentials'}), 401
+        
+        if user.check_password(data['password']):
+            access_token = create_access_token(identity=user.id)
+            logger.info(f"Login successful for user: {user.username}")
+            return jsonify({
+                'access_token': access_token,
+                'is_admin': user.is_admin
+            })
+        
+        logger.warning(f"Login failed: Invalid password for user {user.username}")
+        return jsonify({'error': 'Invalid credentials'}), 401
+    except Exception as e:
+        logger.error(f"Login error: {str(e)}")
+        return jsonify({'error': 'Internal server error'}), 500
 
 @app.route('/api/contacts', methods=['GET'])
 @jwt_required()

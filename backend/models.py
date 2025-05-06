@@ -12,11 +12,21 @@ class User(db.Model):
     contacts = db.relationship('Contact', backref='user', lazy=True)
 
     def set_password(self, password):
+        # Generate salt and hash the password
         salt = bcrypt.gensalt()
-        self.password_hash = bcrypt.hashpw(password.encode('utf-8'), salt)
+        hashed = bcrypt.hashpw(password.encode('utf-8'), salt)
+        # Store the hash as a string
+        self.password_hash = hashed.decode('utf-8')
 
     def check_password(self, password):
-        return bcrypt.checkpw(password.encode('utf-8'), self.password_hash)
+        try:
+            # Convert the stored hash back to bytes
+            stored_hash = self.password_hash.encode('utf-8')
+            # Hash the provided password with the same salt
+            return bcrypt.checkpw(password.encode('utf-8'), stored_hash)
+        except Exception as e:
+            print(f"Error checking password: {str(e)}")
+            return False
 
 class Contact(db.Model):
     id = db.Column(db.Integer, primary_key=True)
