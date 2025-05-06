@@ -6,7 +6,16 @@ from config import Config
 
 app = Flask(__name__)
 app.config.from_object(Config)
-CORS(app)
+
+# Configure CORS
+CORS(app, resources={
+    r"/api/*": {
+        "origins": "*",
+        "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+        "allow_headers": ["Content-Type", "Authorization"]
+    }
+})
+
 jwt = JWTManager(app)
 db.init_app(app)
 
@@ -120,4 +129,4 @@ def delete_contact(contact_id):
     return jsonify({'message': 'Contact deleted successfully'})
 
 if __name__ == '__main__':
-    app.run(debug=True) 
+    app.run(host='0.0.0.0', port=5000) 

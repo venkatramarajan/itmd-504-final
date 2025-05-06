@@ -28,7 +28,7 @@ const ContactList = () => {
 
   const fetchContacts = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/contacts', {
+      const response = await axios.get('/api/contacts', {
         headers: { Authorization: `Bearer ${user.token}` },
       });
       setContacts(response.data);
@@ -43,7 +43,7 @@ const ContactList = () => {
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`http://localhost:5000/api/contacts/${id}`, {
+      await axios.delete(`/api/contacts/${id}`, {
         headers: { Authorization: `Bearer ${user.token}` },
       });
       fetchContacts();

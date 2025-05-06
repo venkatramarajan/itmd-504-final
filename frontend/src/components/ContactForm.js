@@ -54,7 +54,7 @@ const ContactForm = ({ open, onClose, onSubmit, contact }) => {
     try {
       if (contact) {
         await axios.put(
-          `http://localhost:5000/api/contacts/${contact.id}`,
+          `/api/contacts/${contact.id}`,
           formData,
           {
             headers: { Authorization: `Bearer ${user.token}` },
@@ -62,7 +62,7 @@ const ContactForm = ({ open, onClose, onSubmit, contact }) => {
         );
       } else {
         await axios.post(
-          'http://localhost:5000/api/contacts',
+          '/api/contacts',
           formData,
           {
             headers: { Authorization: `Bearer ${user.token}` },
